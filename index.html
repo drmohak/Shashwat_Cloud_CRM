@@ -513,8 +513,7 @@ function doCheckIn(dealId) {
       APP.campCheckins.push({name:deal.Patient_Full_Name,time:t,visits:res.Total_Visits,asha:asha});
       document.getElementById('campSearch').value=''; document.getElementById('campResults').innerHTML='';
       renderCampLog(); fireConfetti('light');
-      alert('Checked in! Visit #'+res.Total_Visits+(res.ashaPayout?'
-ASHA payout: Rs.'+res.ashaPayout.amount:''));
+      alert('Checked in! Visit #'+res.Total_Visits+(res.ashaPayout?' ASHA payout: Rs.'+res.ashaPayout.amount:''));
     }
   });
 }
@@ -761,7 +760,7 @@ function openNewDeal() {
   var spokeEl=buildSelect(APP.spokes,APP.spoke); spokeEl.id='nSpoke';
   var srcEl=buildSelect(['Walk-in','Camp','ASHA worker','Referral Doctor','Social Media'],''); srcEl.id='nSource';
   var grid=document.createElement('div'); grid.className='form-grid';
-  grid.innerHTML='<div class="form-group form-full"><label>WIFE'S FULL NAME *</label><input id="nName" placeholder="e.g. Meena Prajapati"></div>'+fgH("Wife's Mobile *",'<input id="nWMob" type="tel" placeholder="10-digit">')+fgH("Husband's Name",'<input id="nHus">')+fgH("Husband's Mobile",'<input id="nHMob" type="tel">')+fgH('City / Village','<input id="nCity">')+'<div class="form-group"><label>SPOKE *</label><div id="nSpokeW"></div></div><div class="form-group"><label>LEAD SOURCE *</label><div id="nSourceW"></div></div><div class="form-group" id="ashaFieldWrap" style="display:none;"><label>ASHA WORKER</label><div id="nAshaW"></div></div>';
+  grid.innerHTML='<div class="form-group form-full"><label>WIFE NAME *</label><input id="nName" placeholder="e.g. Meena Prajapati"></div>'+fgH('Wife Mobile *','<input id="nWMob" type="tel" placeholder="10-digit">')+fgH('Husband Name','<input id="nHus">')+fgH('Husband Mobile','<input id="nHMob" type="tel">')+fgH('City / Village','<input id="nCity">')+'<div class="form-group"><label>SPOKE *</label><div id="nSpokeW"></div></div><div class="form-group"><label>LEAD SOURCE *</label><div id="nSourceW"></div></div><div class="form-group" id="ashaFieldWrap" style="display:none;"><label>ASHA WORKER</label><div id="nAshaW"></div></div>';
   body.appendChild(grid);
   document.getElementById('nSpokeW').appendChild(spokeEl);
   document.getElementById('nSourceW').appendChild(srcEl);
