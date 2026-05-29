@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shashwat IVF CRM v5</title>
+<title>Shashwat IVF CRM v6</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.2/confetti.browser.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
 <style>
@@ -17,41 +18,68 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;font-size:14px;}
-#sidebar{width:var(--sidebar-w);background:var(--navy-dark);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
+
+/* SIDEBAR */
+#sidebar{width:var(--sidebar-w);background:var(--navy-dark);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;transition:transform .25s;}
 .sidebar-brand{padding:14px;border-bottom:1px solid rgba(255,255,255,0.08);}
-.sidebar-brand .brand-main{font-size:15px;font-weight:800;color:#fff;line-height:1.2;}
-.sidebar-brand .brand-main span{color:var(--pink);}
-.sidebar-brand .brand-sub{font-size:9px;color:rgba(255,255,255,0.35);letter-spacing:1.5px;text-transform:uppercase;margin-top:3px;}
+.brand-main{font-size:15px;font-weight:800;color:#fff;line-height:1.2;}
+.brand-main span{color:var(--pink);}
+.brand-sub{font-size:9px;color:rgba(255,255,255,0.35);letter-spacing:1.5px;text-transform:uppercase;margin-top:3px;}
 .nav-section{padding:8px 10px 4px;font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,0.28);font-weight:600;}
 .nav-item{display:flex;align-items:center;gap:9px;padding:8px 14px;cursor:pointer;border-radius:6px;margin:1px 8px;color:rgba(255,255,255,0.6);font-size:13px;font-weight:500;transition:all .15s;}
 .nav-item:hover{background:rgba(255,255,255,0.07);color:#fff;}
 .nav-item.active{background:linear-gradient(135deg,var(--pink),#c4177a);color:#fff;box-shadow:0 2px 8px rgba(233,30,140,0.4);}
 .nav-item svg{width:16px;height:16px;flex-shrink:0;}
 .nav-badge{margin-left:auto;background:var(--orange);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;}
+.user-card{margin:8px;padding:10px 12px;background:rgba(255,255,255,0.06);border-radius:8px;border:1px solid rgba(255,255,255,0.1);}
+.user-name{font-size:12px;font-weight:600;color:#fff;}
+.user-email{font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px;}
+.sign-out-btn{margin-top:8px;background:transparent;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.6);padding:4px 10px;border-radius:5px;font-size:11px;cursor:pointer;font-family:inherit;width:100%;}
+.sign-out-btn:hover{border-color:var(--pink);color:var(--pink);}
+
+/* MAIN */
 #main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 #header{height:var(--header-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 18px;gap:12px;flex-shrink:0;}
 .header-title{font-size:15px;font-weight:700;color:var(--navy);flex:1;}
-#gate{position:fixed;inset:0;background:var(--navy-dark);display:flex;align-items:center;justify-content:center;z-index:300;flex-direction:column;gap:20px;}
-#gate.hidden{display:none;}
-.gate-brand{text-align:center;}
-.gate-brand .g-main{font-size:32px;font-weight:800;color:#fff;line-height:1.1;}
+.hamburger{display:none;background:none;border:none;cursor:pointer;padding:4px;}
+.hamburger svg{width:22px;height:22px;color:var(--navy);}
+
+/* GATE - AUTH */
+#authGate{position:fixed;inset:0;background:var(--navy-dark);display:flex;align-items:center;justify-content:center;z-index:400;flex-direction:column;gap:20px;}
+#authGate.hidden{display:none;}
+.gate-brand .g-main{font-size:32px;font-weight:800;color:#fff;line-height:1.1;text-align:center;}
 .gate-brand .g-main span{color:var(--pink);}
-.gate-brand .g-sub{font-size:12px;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin-top:6px;}
-.gate-prompt{color:rgba(255,255,255,0.6);font-size:13px;letter-spacing:.5px;}
+.gate-brand .g-sub{font-size:12px;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin-top:6px;text-align:center;}
+.auth-box{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:32px;text-align:center;width:320px;}
+.auth-box p{color:rgba(255,255,255,0.6);font-size:13px;margin-bottom:20px;}
+.auth-error{color:#FCA5A5;font-size:12px;margin-top:12px;display:none;}
+
+/* GATE - SPOKE */
+#spokeGate{position:fixed;inset:0;background:var(--navy-dark);display:flex;align-items:center;justify-content:center;z-index:300;flex-direction:column;gap:20px;}
+#spokeGate.hidden{display:none;}
+.gate-prompt{color:rgba(255,255,255,0.7);font-size:13px;letter-spacing:.5px;}
 .gate-loading{color:rgba(255,255,255,0.35);font-size:12px;}
 .gate-spokes{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:380px;max-height:360px;overflow-y:auto;}
 .gate-spoke-btn{padding:12px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:#fff;font-weight:600;cursor:pointer;font-family:inherit;font-size:13px;transition:all .15s;text-align:left;}
 .gate-spoke-btn:hover{background:rgba(233,30,140,0.25);border-color:var(--pink);}
 .gate-spoke-btn.hq{background:linear-gradient(135deg,var(--pink),#c4177a);border-color:var(--pink);grid-column:1/-1;text-align:center;}
+
+/* SPOKE PILL */
 .spoke-pill{display:flex;align-items:center;gap:6px;background:var(--navy);color:#fff;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:none;}
 .spoke-pill svg{width:13px;height:13px;}
+
+/* SEARCH */
 .search-wrap{position:relative;}
 .search-wrap input{padding:6px 10px 6px 30px;border:1px solid var(--border);border-radius:8px;font-size:13px;width:200px;background:#F8FAFC;font-family:inherit;}
 .search-wrap input:focus{outline:none;border-color:var(--pink);}
 .search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--muted);}
+
+/* CONTENT */
 #content{flex:1;overflow:hidden;}
 .page{display:none;height:100%;overflow-y:auto;padding:16px;}
 .page.active{display:block;}
+
+/* STATS */
 .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;align-items:center;gap:12px;}
 .stat-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -61,8 +89,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 .stat-icon.teal{background:rgba(13,148,136,0.1);}
 .stat-val{font-size:22px;font-weight:700;line-height:1;}
 .stat-lbl{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* TABLE */
 .table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
-.table-toolbar{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);}
+.table-toolbar{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
 .table-toolbar h3{font-size:13px;font-weight:700;flex:1;}
 table{width:100%;border-collapse:collapse;}
 thead tr{background:var(--bg);}
@@ -71,6 +101,8 @@ td{padding:6px 10px;border-top:1px solid var(--border);font-size:13px;vertical-a
 tr:hover td{background:#F8FAFC;}
 .patient-name{font-weight:600;font-size:14px;}
 .patient-sub{font-size:11px;color:var(--muted);}
+
+/* BADGES */
 .badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;}
 .badge-blue{background:#EFF6FF;color:#1D4ED8;}
 .badge-green{background:#ECFDF5;color:#065F46;}
@@ -79,25 +111,34 @@ tr:hover td{background:#F8FAFC;}
 .badge-gray{background:#F1F5F9;color:#475569;}
 .badge-red{background:#FEF2F2;color:#991B1B;}
 .badge-navy{background:rgba(26,43,109,0.1);color:var(--navy);}
+.badge-purple{background:#F5F3FF;color:#6D28D9;}
+
+/* BUTTONS */
 .btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:7px;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all .15s;font-family:inherit;}
 .btn-primary{background:linear-gradient(135deg,var(--pink),#c4177a);color:#fff;}
 .btn-primary:hover{opacity:.9;}
 .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);}
 .btn-ghost:hover{border-color:var(--navy);color:var(--navy);}
 .btn-teal{background:var(--teal);color:#fff;}
+.btn-wa{background:#25D366;color:#fff;}
+.btn-wa:hover{opacity:.9;}
 .btn-sm{padding:4px 8px;font-size:11px;}
+
+/* SLIDE-OVER */
 #overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,0.45);z-index:100;}
 #overlay.open{display:block;}
-#slideover{position:fixed;top:0;right:-42%;width:42%;height:100vh;background:var(--surface);z-index:101;display:flex;flex-direction:column;box-shadow:-4px 0 32px rgba(0,0,0,0.18);transition:right .28s cubic-bezier(.4,0,.2,1);}
+#slideover{position:fixed;top:0;right:-45%;width:45%;height:100vh;background:var(--surface);z-index:101;display:flex;flex-direction:column;box-shadow:-4px 0 32px rgba(0,0,0,0.18);transition:right .28s cubic-bezier(.4,0,.2,1);}
 #slideover.open{right:0;}
 .so-header{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border);background:var(--navy-dark);}
 .so-header h2{color:#fff;font-size:15px;font-weight:700;flex:1;}
 .so-close{width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.1);border:none;color:#fff;border-radius:6px;cursor:pointer;font-size:16px;}
 .so-close:hover{background:rgba(233,30,140,0.5);}
 .so-body{flex:1;overflow-y:auto;padding:16px;}
-.so-tabs{display:flex;gap:4px;padding:12px 18px 0;border-bottom:1px solid var(--border);}
-.so-tab{padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;border-radius:8px 8px 0 0;color:var(--muted);border:1px solid transparent;margin-bottom:-1px;}
+.so-tabs{display:flex;gap:4px;padding:12px 18px 0;border-bottom:1px solid var(--border);overflow-x:auto;}
+.so-tab{padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;border-radius:8px 8px 0 0;color:var(--muted);border:1px solid transparent;margin-bottom:-1px;white-space:nowrap;}
 .so-tab.active{color:var(--navy);border-color:var(--border);border-bottom-color:#fff;background:#fff;}
+
+/* FORM */
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
 .form-full{grid-column:1/-1;}
 .form-group label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;}
@@ -105,48 +146,106 @@ tr:hover td{background:#F8FAFC;}
 .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--pink);}
 .form-group textarea{resize:vertical;min-height:60px;}
 .form-section{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--navy);margin:12px 0 8px;padding-bottom:4px;border-bottom:2px solid rgba(26,43,109,0.12);}
+
+/* TIMELINE */
 .tl-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
 .tl-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;}
-.tl-call{background:#EFF6FF;} .tl-visit{background:#ECFDF5;} .tl-note{background:#FFF7ED;}
+.tl-call{background:#EFF6FF;} .tl-visit{background:#ECFDF5;} .tl-note{background:#FFF7ED;} .tl-wa{background:#F0FDF4;}
 .tl-content{flex:1;}
 .tl-meta{font-size:11px;color:var(--muted);}
 .tl-text{font-size:13px;margin-top:2px;}
+
+/* ASHA */
 .asha-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:12px;}
 .asha-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--pink));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;flex-shrink:0;}
 .stalled-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--orange);border-radius:10px;padding:12px;margin-bottom:8px;}
 .hr-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:12px;}
 .hr-status{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+
+/* SPOKE MODAL */
 #spokeModal{display:none;position:fixed;inset:0;background:rgba(15,23,42,0.6);z-index:200;align-items:center;justify-content:center;}
 #spokeModal.open{display:flex;}
 .spoke-modal-inner{background:#fff;border-radius:14px;padding:24px;width:360px;max-height:80vh;overflow-y:auto;}
 .spoke-option{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;cursor:pointer;}
 .spoke-option:hover{border-color:var(--pink);}
 .spoke-option.active-spoke{border-color:var(--pink);background:rgba(233,30,140,0.06);}
+
+/* WA MODAL */
+#waModal{display:none;position:fixed;inset:0;background:rgba(15,23,42,0.6);z-index:200;align-items:center;justify-content:center;}
+#waModal.open{display:flex;}
+.wa-modal-inner{background:#fff;border-radius:14px;padding:24px;width:480px;max-height:85vh;overflow-y:auto;}
+.wa-template-btn{width:100%;text-align:left;padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer;background:#fff;font-family:inherit;font-size:12px;transition:all .15s;}
+.wa-template-btn:hover{border-color:#25D366;background:#F0FDF4;}
+.wa-template-btn.selected{border-color:#25D366;background:#F0FDF4;}
+.wa-preview{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:12px;font-size:13px;white-space:pre-wrap;margin:12px 0;max-height:200px;overflow-y:auto;line-height:1.6;}
+
+/* FUNNEL */
 .funnel-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;}
 .funnel-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
 .funnel-label{width:140px;font-size:11px;font-weight:600;color:var(--muted);text-align:right;}
 .funnel-bar-wrap{flex:1;background:var(--bg);border-radius:4px;height:22px;overflow:hidden;}
 .funnel-bar{height:100%;display:flex;align-items:center;padding-left:8px;font-size:12px;font-weight:700;color:#fff;border-radius:4px;transition:width .4s;}
 .funnel-count{width:30px;font-size:13px;font-weight:700;}
+
+/* MISC */
 .tag-asha{background:rgba(13,148,136,0.1);color:var(--teal);font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:4px;}
 .empty-state{text-align:center;padding:32px 20px;color:var(--muted);font-size:13px;}
 .loading-pulse{text-align:center;padding:20px;color:var(--muted);font-size:13px;}
 .payout-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);}
 .payout-amt{font-size:16px;font-weight:700;color:var(--teal);}
+.highlight-box{background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;padding:12px;margin-bottom:12px;}
+
+/* MOBILE */
+@media(max-width:768px){
+  #sidebar{position:fixed;left:0;top:0;height:100vh;z-index:150;transform:translateX(-100%);}
+  #sidebar.open{transform:translateX(0);}
+  .hamburger{display:flex;}
+  .stat-grid{grid-template-columns:1fr 1fr;}
+  #slideover{width:100%;right:-100%;}
+  .form-grid{grid-template-columns:1fr;}
+  .search-wrap input{width:140px;}
+  #newRegBtn span{display:none;}
+  .gate-spokes{width:95vw;}
+  .wa-modal-inner{width:95vw;}
+  .spoke-modal-inner{width:95vw;}
+  #header{padding:0 12px;gap:8px;}
+  .funnel-label{width:90px;}
+}
+@media(max-width:480px){
+  .stat-grid{grid-template-columns:1fr;}
+  table thead{display:none;}
+  table tr{display:block;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;padding:8px;}
+  table td{display:flex;justify-content:space-between;border:none;padding:4px 8px;}
+  table td:before{content:attr(data-label);font-weight:600;color:var(--muted);font-size:11px;}
+}
 </style>
 </head>
 <body>
 
-<div id="gate">
+<!-- AUTH GATE -->
+<div id="authGate">
   <div class="gate-brand">
     <div class="g-main">Shashwat <span>IVF</span> Center</div>
-    <div class="g-sub">Sales &amp; Referral CRM &middot; v5</div>
+    <div class="g-sub">Sales &amp; Referral CRM v6</div>
   </div>
-  <div class="gate-prompt">Select your Spoke / Centre to begin</div>
+  <div class="auth-box">
+    <p>Sign in with your Google account to continue</p>
+    <div id="googleSignInBtn"></div>
+    <div class="auth-error" id="authError">Access denied. Your account is not authorised.</div>
+  </div>
+</div>
+
+<!-- SPOKE GATE -->
+<div id="spokeGate" class="hidden">
+  <div class="gate-brand">
+    <div class="g-main">Shashwat <span>IVF</span> Center</div>
+    <div class="g-sub">Select your Centre</div>
+  </div>
   <div class="gate-loading" id="gateLoading">Loading centres...</div>
   <div class="gate-spokes" id="gateSpokes" style="display:none;"></div>
 </div>
 
+<!-- SPOKE MODAL -->
 <div id="spokeModal">
   <div class="spoke-modal-inner">
     <h3 style="font-size:16px;font-weight:700;margin-bottom:4px;">Switch Centre</h3>
@@ -156,8 +255,34 @@ tr:hover td{background:#F8FAFC;}
   </div>
 </div>
 
+<!-- WA MODAL -->
+<div id="waModal">
+  <div class="wa-modal-inner">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <h3 style="font-size:15px;font-weight:700;">Send WhatsApp Message</h3>
+      <button class="so-close" style="background:var(--border);color:var(--text);" id="waModalClose">&#10005;</button>
+    </div>
+    <div id="waPatientInfo" style="font-size:13px;color:var(--muted);margin-bottom:12px;"></div>
+    <div class="form-section">Select Template</div>
+    <div id="waTemplateList"></div>
+    <div id="waPreviewWrap" style="display:none;">
+      <div class="form-section">Preview</div>
+      <div class="wa-preview" id="waPreview"></div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Time (if needed)</label>
+          <input type="text" id="waTime" placeholder="e.g. 10:30 AM">
+        </div>
+      </div>
+      <button class="btn btn-wa" style="width:100%;" id="waSendBtn">Send via WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY -->
 <div id="overlay"></div>
 
+<!-- SLIDE-OVER -->
 <div id="slideover">
   <div class="so-header">
     <h2 id="soTitle">Patient Details</h2>
@@ -167,10 +292,11 @@ tr:hover td{background:#F8FAFC;}
   <div class="so-body" id="soBody"></div>
 </div>
 
+<!-- SIDEBAR -->
 <nav id="sidebar">
   <div class="sidebar-brand">
     <div class="brand-main">Shashwat <span>IVF</span></div>
-    <div class="brand-sub">Sales &amp; Referral CRM v5</div>
+    <div class="brand-sub">CRM v6</div>
   </div>
   <div class="nav-section">Main</div>
   <div class="nav-item active" id="nav-dashboard">
@@ -200,11 +326,20 @@ tr:hover td{background:#F8FAFC;}
     Healthray <span class="nav-badge" style="background:var(--danger);" id="hrBadge">0</span>
   </div>
   <div style="flex:1;"></div>
-  <div style="padding:12px;font-size:10px;color:rgba(255,255,255,0.2);text-align:center;">Shashwat IVF &amp; Women's Hospital</div>
+  <div class="user-card" id="userCard" style="display:none;">
+    <div class="user-name" id="userName"></div>
+    <div class="user-email" id="userEmail"></div>
+    <button class="sign-out-btn" id="signOutBtn">Sign Out</button>
+  </div>
+  <div style="padding:8px 12px;font-size:10px;color:rgba(255,255,255,0.2);text-align:center;">Shashwat IVF &amp; Women's Hospital</div>
 </nav>
 
+<!-- MAIN -->
 <div id="main">
   <div id="header">
+    <button class="hamburger" id="hamburgerBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
     <button class="spoke-pill" id="spokeBtn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
       <span id="spokeName">Select Centre</span>
@@ -214,13 +349,14 @@ tr:hover td{background:#F8FAFC;}
     <div style="display:flex;align-items:center;gap:8px;">
       <div class="search-wrap">
         <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" placeholder="Search patients..." id="searchInput">
+        <input type="text" placeholder="Search..." id="searchInput">
       </div>
-      <button class="btn btn-primary" id="newRegBtn">+ New Registration</button>
+      <button class="btn btn-primary" id="newRegBtn"><span>+ New Registration</span></button>
     </div>
   </div>
 
   <div id="content">
+    <!-- DASHBOARD -->
     <div class="page active" id="page-dashboard">
       <div class="stat-grid">
         <div class="stat-card"><div class="stat-icon pink"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--pink)" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div><div class="stat-val" id="statActive">0</div><div class="stat-lbl">Active Deals</div></div></div>
@@ -234,22 +370,30 @@ tr:hover td{background:#F8FAFC;}
       </div>
     </div>
 
+    <!-- DEALS -->
     <div class="page" id="page-deals">
       <div class="table-wrap">
         <div class="table-toolbar">
           <h3>Patient Deals</h3>
           <select id="stageFilter" style="border:1px solid var(--border);padding:5px 8px;border-radius:6px;font-size:12px;font-family:inherit;">
             <option value="">All Stages</option>
-            <option>Registration</option><option>Counselling</option><option>Investigation</option><option>Deposit</option><option>Procedure Completed</option>
+            <option>Registration</option><option>Counselling</option><option>Investigation</option>
+            <option>Deposit</option><option>Dormant</option><option>Procedure Completed</option>
           </select>
           <button class="btn btn-ghost btn-sm" id="addDealBtn">+ Add</button>
         </div>
         <div id="dealsLoading" class="loading-pulse" style="display:none;">Loading deals...</div>
-        <table><thead><tr><th>Patient</th><th>Spoke</th><th>Stage</th><th>Source</th><th>Follow-up</th><th>Deposit</th><th>HR</th><th></th></tr></thead>
-        <tbody id="dealsTable"></tbody></table>
+        <div style="overflow-x:auto;">
+          <table><thead><tr>
+            <th>Patient</th><th>Spoke</th><th>Stage</th><th>Treatment Advised</th>
+            <th>Follow-up</th><th>Deposit</th><th>HR</th><th>WA</th><th></th>
+          </tr></thead>
+          <tbody id="dealsTable"></tbody></table>
+        </div>
       </div>
     </div>
 
+    <!-- CAMP -->
     <div class="page" id="page-camp">
       <div style="max-width:560px;">
         <div class="table-wrap" style="margin-bottom:14px;">
@@ -267,6 +411,7 @@ tr:hover td{background:#F8FAFC;}
       </div>
     </div>
 
+    <!-- ASHA -->
     <div class="page" id="page-asha">
       <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:14px;">
         <div class="table-wrap"><div class="table-toolbar"><h3>ASHA Directory</h3><button class="btn btn-teal btn-sm" id="addAshaBtn">+ Add ASHA</button></div><div style="padding:8px;" id="ashaDirectory"><div class="loading-pulse">Loading...</div></div></div>
@@ -277,10 +422,12 @@ tr:hover td{background:#F8FAFC;}
       </div>
     </div>
 
+    <!-- TELECALLER -->
     <div class="page" id="page-telecaller">
-      <div class="table-wrap"><div class="table-toolbar"><h3>Stalled Leads</h3><span style="font-size:11px;color:var(--muted);">Counselled but not converted</span></div><div style="padding:12px;" id="stalledLeads"><div class="loading-pulse">Loading...</div></div></div>
+      <div class="table-wrap"><div class="table-toolbar"><h3>Reactivation Queue</h3><span style="font-size:11px;color:var(--muted);">Stalled + Dormant leads</span></div><div style="padding:12px;" id="stalledLeads"><div class="loading-pulse">Loading...</div></div></div>
     </div>
 
+    <!-- HEALTHRAY -->
     <div class="page" id="page-healthray">
       <div class="table-wrap"><div class="table-toolbar"><h3>Healthray Handover</h3><span style="font-size:11px;color:var(--orange);font-weight:600;" id="hrPendingCount"></span></div><div style="padding:12px;" id="healthrayList"><div class="loading-pulse">Loading...</div></div></div>
     </div>
@@ -288,24 +435,99 @@ tr:hover td{background:#F8FAFC;}
 </div>
 
 <script>
-var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwSSc9veVZfvUJs92NTT-9ebcL4XOn7GqACMeNZTRDImzq-O3ArZdB-45KwO__CuFc5/exec';
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxudWjKqnTczTjpP8mgOGDy21c1l-UAyOB7tEgSKAqJSNmBwCEQ5r3wc8bdqCTM4xKt4A/exec';
+var CLIENT_ID  = '619690160190-9a9ifmc3cc996gdd0ddarnkib26h40vm.apps.googleusercontent.com';
+
 var APP = {
-  spoke:'', spokes:[], deals:[], ashas:[], ledger:[],
-  campCheckins:[], currentDeal:null,
-  staffName: localStorage.getItem('crm_staff') || '',
-  payoutPreReg:300, payoutSpot:200, seminarFee:200
+  spoke:'', spokes:[], deals:[], ashas:[], ledger:[], waTemplates:[],
+  campCheckins:[], currentDeal:null, waCurrentDeal:null, waSelectedTemplate:null,
+  user:{ name:'', email:'', token:'' },
+  payoutPreReg:300, payoutSpot:200, seminarFee:200,
+  allowedUsers:[]
 };
 
+//    API   
 function apiGet(action, params) {
-  var url = SCRIPT_URL + '?action=' + action;
+  var url = SCRIPT_URL + '?action=' + action + '&token=' + encodeURIComponent(APP.user.token);
   if (params) { Object.keys(params).forEach(function(k){ url += '&' + k + '=' + encodeURIComponent(params[k]); }); }
   return fetch(url).then(function(r){ return r.json(); });
 }
 function apiPost(action, data) {
+  data._token = APP.user.token;
+  data._user  = APP.user.email;
+  data._name  = APP.user.name;
   return fetch(SCRIPT_URL, {method:'POST', body:JSON.stringify({action:action, data:data})}).then(function(r){ return r.json(); });
 }
 
-// Wire up static buttons
+//    GOOGLE AUTH   
+window.onload = function() {
+  google.accounts.id.initialize({
+    client_id: CLIENT_ID,
+    callback: handleGoogleSignIn,
+    auto_select: false,
+  });
+  google.accounts.id.renderButton(
+    document.getElementById('googleSignInBtn'),
+    { theme:'filled_blue', size:'large', text:'signin_with', shape:'rectangular', width:240 }
+  );
+};
+
+function handleGoogleSignIn(response) {
+  var token   = response.credential;
+  var payload = JSON.parse(atob(token.split('.')[1]));
+  var email   = payload.email;
+  var name    = payload.name;
+
+  // Verify against allowed users via GAS
+  fetch(SCRIPT_URL + '?action=verifyUser&email=' + encodeURIComponent(email) + '&token=' + encodeURIComponent(token))
+    .then(function(r){ return r.json(); })
+    .then(function(res) {
+      if (res.allowed) {
+        APP.user.email = email;
+        APP.user.name  = name;
+        APP.user.token = token;
+        document.getElementById('authGate').classList.add('hidden');
+        document.getElementById('spokeGate').classList.remove('hidden');
+        document.getElementById('userCard').style.display = 'block';
+        document.getElementById('userName').textContent  = name;
+        document.getElementById('userEmail').textContent = email;
+        loadBranding();
+      } else {
+        document.getElementById('authError').style.display = 'block';
+        document.getElementById('authError').textContent   = 'Access denied. ' + email + ' is not authorised.';
+      }
+    }).catch(function(e) {
+      document.getElementById('authError').style.display  = 'block';
+      document.getElementById('authError').textContent    = 'Connection error. Please try again.';
+      console.error(e);
+    });
+}
+
+function loadBranding() {
+  apiGet('getBranding').then(function(res) {
+    APP.spokes       = res.Spokes || [];
+    APP.payoutPreReg = res.ASHA_Payout_PreReg || 300;
+    APP.payoutSpot   = res.ASHA_Payout_Spot   || 200;
+    APP.seminarFee   = res.ASHA_Seminar_Fee   || 200;
+    APP.allowedUsers = res.Allowed_Users || [];
+    APP.waTemplates  = res.WA_Templates  || [];
+    document.getElementById('gateLoading').style.display = 'none';
+    buildGateButtons();
+    document.getElementById('gateSpokes').style.display = 'grid';
+  });
+}
+
+function signOut() {
+  google.accounts.id.disableAutoSelect();
+  APP.user = {name:'', email:'', token:''};
+  APP.deals = []; APP.ashas = []; APP.ledger = [];
+  document.getElementById('authGate').classList.remove('hidden');
+  document.getElementById('spokeGate').classList.add('hidden');
+  document.getElementById('userCard').style.display = 'none';
+  document.getElementById('authError').style.display = 'none';
+}
+
+//    WIRE UP BUTTONS   
 document.getElementById('overlay').addEventListener('click', closeSlideOver);
 document.getElementById('slideoverCloseBtn').addEventListener('click', closeSlideOver);
 document.getElementById('spokeBtn').addEventListener('click', openSpokeModal);
@@ -317,27 +539,21 @@ document.getElementById('logSeminarBtn').addEventListener('click', logSeminar);
 document.getElementById('searchInput').addEventListener('input', searchDeals);
 document.getElementById('stageFilter').addEventListener('change', function(){ filterStage(this.value); });
 document.getElementById('campSearch').addEventListener('input', campSearchFn);
+document.getElementById('signOutBtn').addEventListener('click', signOut);
+document.getElementById('waModalClose').addEventListener('click', function(){ document.getElementById('waModal').classList.remove('open'); });
+document.getElementById('hamburgerBtn').addEventListener('click', function(){
+  document.getElementById('sidebar').classList.toggle('open');
+});
+document.getElementById('waSendBtn').addEventListener('click', sendWhatsApp);
 
-var navPages = ['dashboard','deals','camp','asha','telecaller','healthray'];
-navPages.forEach(function(p) {
-  document.getElementById('nav-' + p).addEventListener('click', function(){ showPage(p, this); });
+['dashboard','deals','camp','asha','telecaller','healthray'].forEach(function(p) {
+  document.getElementById('nav-' + p).addEventListener('click', function(){
+    showPage(p, this);
+    document.getElementById('sidebar').classList.remove('open');
+  });
 });
 
-window.onload = function() {
-  apiGet('getBranding').then(function(res) {
-    APP.spokes       = res.Spokes || [];
-    APP.payoutPreReg = res.ASHA_Payout_PreReg || 300;
-    APP.payoutSpot   = res.ASHA_Payout_Spot   || 200;
-    APP.seminarFee   = res.ASHA_Seminar_Fee   || 200;
-    document.getElementById('gateLoading').style.display = 'none';
-    buildGateButtons();
-    document.getElementById('gateSpokes').style.display = 'grid';
-  }).catch(function(e) {
-    document.getElementById('gateLoading').textContent = 'Connection error. Check SCRIPT_URL.';
-    console.error(e);
-  });
-};
-
+//    GATE   
 function buildGateButtons() {
   var container = document.getElementById('gateSpokes');
   container.innerHTML = '';
@@ -358,11 +574,7 @@ function buildGateButtons() {
 function selectSpoke(sp) {
   APP.spoke = sp;
   document.getElementById('spokeName').textContent = sp;
-  document.getElementById('gate').classList.add('hidden');
-  if (!APP.staffName) {
-    APP.staffName = prompt('Enter your name (saved for this browser):') || 'Staff';
-    localStorage.setItem('crm_staff', APP.staffName);
-  }
+  document.getElementById('spokeGate').classList.add('hidden');
   loadAll();
 }
 
@@ -395,23 +607,16 @@ function showPage(page, el) {
 }
 
 function openSpokeModal() {
-  var wrap = document.getElementById('spokeOptions');
-  wrap.innerHTML = '';
+  var wrap = document.getElementById('spokeOptions'); wrap.innerHTML = '';
   var all = ['ALL CENTERS'].concat(APP.spokes);
   all.forEach(function(s) {
     var d = document.createElement('div');
     d.className = 'spoke-option' + (s === APP.spoke ? ' active-spoke' : '');
-    var label = document.createElement('span');
-    label.textContent = s; label.style.fontWeight = '600'; label.style.fontSize = '13px';
+    var label = document.createElement('span'); label.textContent = s; label.style.fontWeight = '600';
     d.appendChild(label);
-    if (s === APP.spoke) {
-      var check = document.createElement('span');
-      check.textContent = String.fromCharCode(10003); check.style.color = 'var(--pink)';
-      d.appendChild(check);
-    }
+    if (s === APP.spoke) { var chk = document.createElement('span'); chk.textContent = String.fromCharCode(10003); chk.style.color='var(--pink)'; d.appendChild(chk); }
     d.addEventListener('click', function() {
-      APP.spoke = s;
-      document.getElementById('spokeName').textContent = s;
+      APP.spoke = s; document.getElementById('spokeName').textContent = s;
       document.querySelectorAll('.spoke-option').forEach(function(o){ o.classList.remove('active-spoke'); });
       d.classList.add('active-spoke');
     });
@@ -421,22 +626,22 @@ function openSpokeModal() {
 }
 function closeSpokeModal() { document.getElementById('spokeModal').classList.remove('open'); loadAll(); }
 
+//    RENDER   
 function filteredDeals() { return APP.deals.filter(function(x){ return x.Current_Stage !== 'Disqualified'; }); }
-
 function renderAll() { renderDashboard(); renderDeals(); renderAsha(); renderTelecaller(); renderHealthray(); }
 
 function renderDashboard() {
   var d = filteredDeals();
-  var stages = ['Registration','Counselling','Investigation','Deposit','Procedure Completed'];
-  var colors = ['#1A2B6D','#E91E8C','#F97316','#0D9488','#10B981'];
+  var stages = ['Registration','Counselling','Investigation','Deposit','Dormant','Procedure Completed'];
+  var colors = ['#1A2B6D','#E91E8C','#F97316','#0D9488','#9CA3AF','#10B981'];
   var counts = stages.map(function(s){ return d.filter(function(x){ return x.Current_Stage===s; }).length; });
   var maxC   = Math.max.apply(null, counts.concat([1]));
   var totDep = d.reduce(function(a,x){ return a+(Number(x.Total_Deposit)||0); },0);
   document.getElementById('statActive').textContent    = d.filter(function(x){ return x.Current_Stage!=='Procedure Completed'; }).length;
   document.getElementById('statDeposits').textContent  = counts[3];
-  document.getElementById('statCompleted').textContent = counts[4];
+  document.getElementById('statCompleted').textContent = counts[5];
   document.getElementById('statDeposit').textContent   = 'Rs.' + (totDep>0?(totDep/100000).toFixed(1)+'L':'0');
-  document.getElementById('dealsCount').textContent    = d.filter(function(x){ return x.Current_Stage!=='Procedure Completed'; }).length;
+  document.getElementById('dealsCount').textContent    = d.filter(function(x){ return !['Procedure Completed','Disqualified'].includes(x.Current_Stage); }).length;
   var fc = document.getElementById('funnelChart'); fc.innerHTML = '';
   stages.forEach(function(s,i) {
     var row = document.createElement('div'); row.className = 'funnel-row';
@@ -460,21 +665,25 @@ function renderDashboard() {
 function renderDeals() {
   var d=filteredDeals(); var today=new Date().toISOString().split('T')[0];
   var tbody=document.getElementById('dealsTable'); tbody.innerHTML='';
-  if (!d.length) { var tr=document.createElement('tr'); tr.innerHTML='<td colspan="8"><div class="empty-state">No deals. Register a patient to start.</div></td>'; tbody.appendChild(tr); return; }
+  if (!d.length) { var tr=document.createElement('tr'); tr.innerHTML='<td colspan="9"><div class="empty-state">No deals. Register a patient to start.</div></td>'; tbody.appendChild(tr); return; }
   d.forEach(function(x) {
     var tr=document.createElement('tr'); tr.style.cursor='pointer';
     var overdue=x.Next_Followup_Date&&x.Next_Followup_Date<today;
-    var ashaTag=x.Referred_By_ASHA_ID?'<span class="tag-asha">ASHA</span>':'';
-    var dep=x.Total_Deposit>0?'Rs.'+Number(x.Total_Deposit).toLocaleString('en-IN'):'-';
+    var dep=x.Total_Deposit>0?'Rs.'+Number(x.Total_Deposit).toLocaleString('en-IN'):' ';
     var hr=x.Healthray_Status==='Completed'?'&#9989;':'&#9203;';
-    tr.innerHTML='<td><div class="patient-name">'+esc(x.Patient_Full_Name)+'</div><div class="patient-sub">'+esc(x.Wife_Mobile)+' &middot; '+esc(x.City_Village)+'</div></td>'+
-      '<td style="font-size:12px;color:var(--muted);">'+esc(x.Spoke_Name)+'</td>'+
-      '<td>'+stageBadge(x.Current_Stage)+'</td>'+
-      '<td><span class="badge badge-gray">'+esc(x.Lead_Source)+'</span>'+ashaTag+'</td>'+
-      '<td style="font-size:12px;'+(overdue?'color:var(--danger);font-weight:600;':'')+'">'+esc(x.Next_Followup_Date||'-')+'</td>'+
-      '<td style="font-weight:600;color:'+(x.Total_Deposit>0?'var(--teal)':'var(--muted)')+';">'+dep+'</td>'+
-      '<td style="font-size:16px;">'+hr+'</td>'+
+    var ashaTag=x.Referred_By_ASHA_ID?'<span class="tag-asha">ASHA</span>':'';
+    var treatBadge=x.Treatment_Advised?'<span class="badge badge-purple" style="font-size:10px;">'+esc(x.Treatment_Advised)+'</span>':'<span style="color:var(--muted);font-size:11px;"> </span>';
+    tr.innerHTML='<td data-label="Patient"><div class="patient-name">'+esc(x.Patient_Full_Name)+'</div><div class="patient-sub">'+esc(x.Wife_Mobile)+' &middot; '+esc(x.City_Village)+'</div></td>'+
+      '<td data-label="Spoke" style="font-size:12px;color:var(--muted);">'+esc(x.Spoke_Name)+'</td>'+
+      '<td data-label="Stage">'+stageBadge(x.Current_Stage)+ashaTag+'</td>'+
+      '<td data-label="Treatment">'+treatBadge+'</td>'+
+      '<td data-label="Follow-up" style="font-size:12px;'+(overdue?'color:var(--danger);font-weight:600;':'')+'">'+esc(x.Next_Followup_Date||' ')+'</td>'+
+      '<td data-label="Deposit" style="font-weight:600;color:'+(x.Total_Deposit>0?'var(--teal)':'var(--muted)')+';">'+dep+'</td>'+
+      '<td data-label="HR" style="font-size:16px;">'+hr+'</td>'+
+      '<td data-label="WA"><button class="btn btn-wa btn-sm" title="Send WhatsApp">WA</button></td>'+
       '<td><button class="btn btn-ghost btn-sm">&#8594;</button></td>';
+    // WA button
+    tr.querySelectorAll('td')[7].querySelector('button').addEventListener('click', function(e){ e.stopPropagation(); openWAModal(x.Deal_ID); });
     tr.addEventListener('click', function(){ openDeal(x.Deal_ID); });
     tbody.appendChild(tr);
   });
@@ -488,6 +697,72 @@ function searchDeals() {
   document.querySelectorAll('#dealsTable tr').forEach(function(r){ r.style.display=r.textContent.toLowerCase().includes(q)?'':'none'; });
 }
 
+//    WHATSAPP   
+function openWAModal(dealId) {
+  APP.waCurrentDeal = APP.deals.find(function(x){ return x.Deal_ID===dealId; });
+  if (!APP.waCurrentDeal) return;
+  var d = APP.waCurrentDeal;
+  document.getElementById('waPatientInfo').innerHTML = '<strong>'+esc(d.Patient_Full_Name)+'</strong> &middot; '+esc(d.Wife_Mobile)+' &middot; '+stageBadge(d.Current_Stage);
+  var list = document.getElementById('waTemplateList'); list.innerHTML='';
+  APP.waTemplates.forEach(function(t, i) {
+    var btn = document.createElement('button'); btn.className='wa-template-btn';
+    var lines = t.split('\n');
+    var title = lines[0] || ('Template ' + (i+1));
+    btn.textContent = title;
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.wa-template-btn').forEach(function(b){ b.classList.remove('selected'); });
+      btn.classList.add('selected');
+      APP.waSelectedTemplate = t;
+      showWAPreview(t, d);
+    });
+    list.appendChild(btn);
+  });
+  document.getElementById('waPreviewWrap').style.display='none';
+  document.getElementById('waModal').classList.add('open');
+}
+
+function showWAPreview(template, d) {
+  var lastVisit = ' ';
+  // Find last physical visit from deals data
+  if (d.Last_Updated) lastVisit = d.Last_Updated;
+  var msg = template
+    .replace(/\{name\}/g, d.Patient_Full_Name)
+    .replace(/\[   \]/g, d.Patient_Full_Name)
+    .replace(/\{next_followup\}/g, d.Next_Followup_Date || ' ')
+    .replace(/\[     \]/g, d.Next_Followup_Date || ' ')
+    .replace(/\[   \]/g, document.getElementById('waTime').value || '[   ]')
+    .replace(/\{last_visit\}/g, lastVisit)
+    .replace(/\{spoke\}/g, d.Spoke_Name)
+    .replace(/\{husband\}/g, d.Husband_Name)
+    .replace(/\\n/g, '\n');
+  document.getElementById('waPreview').textContent = msg;
+  document.getElementById('waPreviewWrap').style.display='block';
+}
+
+document.getElementById('waTime').addEventListener('input', function() {
+  if (APP.waSelectedTemplate && APP.waCurrentDeal) showWAPreview(APP.waSelectedTemplate, APP.waCurrentDeal);
+});
+
+function sendWhatsApp() {
+  var d = APP.waCurrentDeal; if (!d) return;
+  var mobile = String(d.Wife_Mobile).replace(/\D/g,'');
+  if (mobile.length === 10) mobile = '91' + mobile;
+  var msg = document.getElementById('waPreview').textContent;
+  var url = 'https://wa.me/' + mobile + '?text=' + encodeURIComponent(msg);
+  window.open(url, '_blank');
+  // Log the WhatsApp interaction
+  apiPost('addLog', {
+    Deal_ID:       d.Deal_ID,
+    Staff_Name:    APP.user.name,
+    Notes:         'WhatsApp sent: ' + (APP.waSelectedTemplate||'').split('\n')[0],
+    Disposition:   'WhatsApp',
+    Stage_At_Time: d.Current_Stage,
+    Location:      APP.spoke,
+  }).then(function(){ loadAll(); });
+  document.getElementById('waModal').classList.remove('open');
+}
+
+//    CAMP   
 function campSearchFn() {
   var q=document.getElementById('campSearch').value.toLowerCase();
   var res=document.getElementById('campResults'); res.innerHTML='';
@@ -505,15 +780,15 @@ function campSearchFn() {
 
 function doCheckIn(dealId) {
   var deal=APP.deals.find(function(x){ return x.Deal_ID===dealId; }); if (!deal) return;
-  apiPost('checkIn',{Deal_ID:dealId,Staff_Name:APP.staffName,Location:APP.spoke}).then(function(res) {
+  apiPost('checkIn',{Deal_ID:dealId,Staff_Name:APP.user.name,Location:APP.spoke}).then(function(res) {
     if (res.success) {
       deal.Total_Visits=res.Total_Visits;
       var t=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
-      var asha=deal.Referred_By_ASHA_ID?(APP.ashas.find(function(a){ return a.ASHA_ID===deal.Referred_By_ASHA_ID; })||{}).Name||'-':'-';
+      var asha=deal.Referred_By_ASHA_ID?(APP.ashas.find(function(a){ return a.ASHA_ID===deal.Referred_By_ASHA_ID; })||{}).Name||' ':' ';
       APP.campCheckins.push({name:deal.Patient_Full_Name,time:t,visits:res.Total_Visits,asha:asha});
       document.getElementById('campSearch').value=''; document.getElementById('campResults').innerHTML='';
       renderCampLog(); fireConfetti('light');
-      alert('Checked in! Visit #'+res.Total_Visits+(res.ashaPayout?' ASHA payout: Rs.'+res.ashaPayout.amount:''));
+      alert('Checked in! Visit #'+res.Total_Visits+(res.ashaPayout?' | ASHA payout: Rs.'+res.ashaPayout.amount:''));
     }
   });
 }
@@ -528,6 +803,7 @@ function renderCampLog() {
   });
 }
 
+//    ASHA   
 function renderAsha() {
   var ashas=APP.spoke==='ALL CENTERS'?APP.ashas:APP.ashas.filter(function(a){ return a.Spoke===APP.spoke; });
   var dir=document.getElementById('ashaDirectory'); dir.innerHTML='';
@@ -572,10 +848,7 @@ function openNewASHA() {
   document.getElementById('soTabs').innerHTML='';
   var body=document.getElementById('soBody'); body.innerHTML='';
   var grid=document.createElement('div'); grid.className='form-grid';
-  grid.innerHTML='<div class="form-group form-full"><label>Full Name *</label><input id="aName" placeholder="e.g. Savitaben Patel"></div>'+
-    '<div class="form-group"><label>Mobile *</label><input id="aMob" type="tel"></div>'+
-    '<div class="form-group"><label>Village</label><input id="aVil"></div>'+
-    '<div class="form-group"><label>Spoke</label><div id="aSpokeW"></div></div>';
+  grid.innerHTML='<div class="form-group form-full"><label>Full Name *</label><input id="aName" placeholder="e.g. Savitaben Patel"></div><div class="form-group"><label>Mobile *</label><input id="aMob" type="tel"></div><div class="form-group"><label>Village</label><input id="aVil"></div><div class="form-group"><label>Spoke</label><div id="aSpokeW"></div></div>';
   body.appendChild(grid);
   var spokeEl=buildSelect(APP.spokes,APP.spoke); spokeEl.id='aSpoke';
   document.getElementById('aSpokeW').appendChild(spokeEl);
@@ -583,36 +856,50 @@ function openNewASHA() {
   btn.addEventListener('click',submitNewASHA); body.appendChild(btn);
   openSlideover('Add ASHA Worker');
 }
-
 function submitNewASHA() {
   var name=document.getElementById('aName').value; var mob=document.getElementById('aMob').value;
   if (!name||!mob) { alert('Name and mobile required.'); return; }
   apiPost('createASHA',{Name:name,Mobile:mob,Village:document.getElementById('aVil').value,Spoke:document.getElementById('aSpoke').value}).then(function(res){ if(res.success){ closeSlideOver(); loadAll(); alert('ASHA added!'); } });
 }
-
 function logSeminar() {
   var ashaName=prompt('ASHA Name:'); if (!ashaName) return;
   var asha=APP.ashas.find(function(a){ return a.Name.toLowerCase()===ashaName.toLowerCase(); });
   if (!asha) { alert('ASHA not found.'); return; }
-  apiPost('addASHALedger',{ASHA_ID:asha.ASHA_ID,Type:'Seminar',Amount:APP.seminarFee,Staff_Name:APP.staffName,Status:'Pending'}).then(function(res){ if(res.success){ loadAll(); alert('Seminar logged: Rs.'+APP.seminarFee); } });
+  apiPost('addASHALedger',{ASHA_ID:asha.ASHA_ID,Type:'Seminar',Amount:APP.seminarFee,Staff_Name:APP.user.name,Status:'Pending'}).then(function(res){ if(res.success){ loadAll(); alert('Seminar logged: Rs.'+APP.seminarFee); } });
 }
 
+//    TELECALLER   
 function renderTelecaller() {
-  var stalled=filteredDeals().filter(function(x){ return x.Current_Stage==='Counselling'&&x.Advise_Outcome==='Follow-up'; });
+  var today = new Date().toISOString().split('T')[0];
+  var stalled=filteredDeals().filter(function(x){
+    return (x.Current_Stage==='Counselling' && x.Advise_Outcome==='Follow-up') ||
+           (x.Current_Stage==='Dormant' && x.Reactivation_Date && x.Reactivation_Date<=today);
+  });
   var el=document.getElementById('stalledLeads'); el.innerHTML='';
-  if (!stalled.length) { el.innerHTML='<div class="empty-state">No stalled leads!</div>'; return; }
+  if (!stalled.length) { el.innerHTML='<div class="empty-state">No leads in queue!</div>'; return; }
   stalled.forEach(function(x) {
+    var isDormant = x.Current_Stage==='Dormant';
     var card=document.createElement('div'); card.className='stalled-card';
+    if (isDormant) card.style.borderLeftColor='var(--purple,#7C3AED)';
     var btn=document.createElement('button'); btn.className='btn btn-primary btn-sm'; btn.textContent='Log Call';
     btn.addEventListener('click',function(){ openDeal(x.Deal_ID); });
-    card.innerHTML='<div style="display:flex;justify-content:space-between;margin-bottom:6px;"><div><div style="font-weight:700;font-size:14px;">'+esc(x.Patient_Full_Name)+'</div><div style="font-size:11px;color:var(--muted);">'+esc(x.Wife_Mobile)+' &middot; '+esc(x.Spoke_Name)+'</div></div><div style="font-size:11px;color:var(--muted);">Last: '+esc(x.Last_Updated||'-')+'</div></div>'+
-      '<div style="font-size:12px;padding:6px 8px;background:#FFF7ED;border-radius:5px;border-left:2px solid var(--orange);margin-bottom:8px;">'+esc(x.Last_Note||'No notes')+'</div>'+
-      '<div style="display:flex;gap:6px;align-items:center;"><span id="sc'+x.Deal_ID+'"></span><span class="badge badge-orange" style="margin-left:auto;">Due: '+esc(x.Next_Followup_Date||'-')+'</span></div>';
+    var waBtn=document.createElement('button'); waBtn.className='btn btn-wa btn-sm'; waBtn.textContent='WA';
+    waBtn.addEventListener('click',function(){ openWAModal(x.Deal_ID); });
+    card.innerHTML='<div style="display:flex;justify-content:space-between;margin-bottom:6px;"><div>'+
+      '<div style="font-weight:700;font-size:14px;">'+esc(x.Patient_Full_Name)+'</div>'+
+      '<div style="font-size:11px;color:var(--muted);">'+esc(x.Wife_Mobile)+' &middot; '+esc(x.Spoke_Name)+'</div>'+
+      (x.Treatment_Advised?'<div style="margin-top:3px;"><span class="badge badge-purple" style="font-size:10px;">'+esc(x.Treatment_Advised)+'</span></div>':'')+'</div>'+
+      '<div style="text-align:right;font-size:11px;color:var(--muted);">'+(isDormant?'Reactivate: '+esc(x.Reactivation_Date||' '):'Last: '+esc(x.Last_Updated||' '))+'</div></div>'+
+      '<div style="font-size:12px;padding:6px 8px;background:#FFF7ED;border-radius:5px;border-left:2px solid var(--orange);margin-bottom:8px;">'+esc(x.Reactivation_Remark||x.Last_Note||'No notes')+'</div>'+
+      '<div style="display:flex;gap:6px;align-items:center;"><span id="sc'+x.Deal_ID+'"></span><span id="wa'+x.Deal_ID+'"></span>'+
+      '<span class="badge '+(isDormant?'badge-gray':'badge-orange')+'" style="margin-left:auto;">'+(isDormant?'Dormant':'Due: '+esc(x.Next_Followup_Date||' '))+'</span></div>';
     el.appendChild(card);
     document.getElementById('sc'+x.Deal_ID).appendChild(btn);
+    document.getElementById('wa'+x.Deal_ID).appendChild(waBtn);
   });
 }
 
+//    HEALTHRAY   
 function renderHealthray() {
   var d=filteredDeals();
   var pending=d.filter(function(x){ return x.Healthray_Status!=='Completed'&&x.Total_Deposit>0; });
@@ -628,30 +915,26 @@ function renderHealthray() {
       '<div style="flex:1;"><div style="font-weight:600;">'+esc(x.Patient_Full_Name)+'</div>'+
       '<div style="font-size:11px;color:var(--muted);">'+esc(x.Spoke_Name)+' &middot; Rs.'+Number(x.Total_Deposit).toLocaleString('en-IN')+'</div>'+
       (isDone?'<div style="font-size:11px;color:var(--teal);">By '+esc(x.Healthray_By)+' on '+esc(x.Healthray_Date)+'</div>':'')+'</div>';
-    if (!isDone) {
-      var btn=document.createElement('button'); btn.className='btn btn-teal btn-sm'; btn.textContent='Mark Complete';
-      btn.addEventListener('click',function(){ doMarkHealthray(x.Deal_ID); }); card.appendChild(btn);
-    }
+    if (!isDone) { var btn=document.createElement('button'); btn.className='btn btn-teal btn-sm'; btn.textContent='Mark Complete'; btn.addEventListener('click',function(){ doMarkHealthray(x.Deal_ID); }); card.appendChild(btn); }
     el.appendChild(card);
   });
 }
-
 function doMarkHealthray(dealId) {
-  apiPost('markHealthray',{Deal_ID:dealId,Staff_Name:APP.staffName}).then(function(res){
-    if(res.success){ var d=APP.deals.find(function(x){ return x.Deal_ID===dealId; }); if(d){d.Healthray_Status='Completed';d.Healthray_By=APP.staffName;d.Healthray_Date=res.date;} renderHealthray(); }
+  apiPost('markHealthray',{Deal_ID:dealId,Staff_Name:APP.user.name}).then(function(res){
+    if(res.success){ var d=APP.deals.find(function(x){ return x.Deal_ID===dealId; }); if(d){d.Healthray_Status='Completed';d.Healthray_By=APP.user.name;d.Healthray_Date=res.date;} renderHealthray(); }
   });
 }
 
+//    SLIDE-OVER   
 function openSlideover(title) {
   document.getElementById('soTitle').textContent=title;
   document.getElementById('overlay').classList.add('open');
   document.getElementById('slideover').classList.add('open');
 }
-
 function openDeal(id) {
   APP.currentDeal=APP.deals.find(function(x){ return x.Deal_ID===id; }); if (!APP.currentDeal) return;
   var tabs=document.getElementById('soTabs'); tabs.innerHTML='';
-  [['journey','Journey'],['profile','Profile'],['medical','Medical'],['log','Log Activity']].forEach(function(pair,i) {
+  [['journey','Journey'],['profile','Profile'],['medical','Medical'],['counselling','Counselling'],['log','Log Activity']].forEach(function(pair,i) {
     var tab=document.createElement('div'); tab.className='so-tab'+(i===0?' active':''); tab.textContent=pair[1];
     tab.addEventListener('click',function(){ document.querySelectorAll('.so-tab').forEach(function(t){ t.classList.remove('active'); }); tab.classList.add('active'); renderSoTab(pair[0]); });
     tabs.appendChild(tab);
@@ -667,14 +950,26 @@ function renderSoTab(tab) {
     apiGet('getLogs',{dealId:d.Deal_ID}).then(function(res) {
       var logs=res.logs||[]; body.innerHTML='';
       var badges=document.createElement('div'); badges.style.cssText='display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;';
-      badges.innerHTML=stageBadge(d.Current_Stage)+(d.Healthray_Status==='Completed'?'<span class="badge badge-teal">&#9989; Healthray</span>':'<span class="badge badge-orange">&#9203; Healthray Pending</span>')+'<span class="badge badge-gray">Visits: '+d.Total_Visits+'</span>';
+      badges.innerHTML=stageBadge(d.Current_Stage)+
+        (d.Treatment_Advised?'<span class="badge badge-purple">'+esc(d.Treatment_Advised)+'</span>':'')+
+        (d.Healthray_Status==='Completed'?'<span class="badge badge-teal">&#9989; Healthray</span>':'<span class="badge badge-orange">&#9203; Healthray</span>')+
+        '<span class="badge badge-gray">Visits: '+d.Total_Visits+'</span>';
       body.appendChild(badges);
-      if (!logs.length) { body.innerHTML+='<div class="empty-state">No logs yet. Use Log Activity tab.</div>'; return; }
+      if (d.Current_Stage==='Dormant'&&d.Reactivation_Date) {
+        var box=document.createElement('div'); box.className='highlight-box';
+        box.innerHTML='<div style="font-weight:600;font-size:12px;color:var(--orange);">DORMANT - Reactivate on '+esc(d.Reactivation_Date)+'</div>'+
+          (d.Reactivation_Remark?'<div style="font-size:12px;margin-top:4px;">'+esc(d.Reactivation_Remark)+'</div>':'');
+        body.appendChild(box);
+      }
+      if (!logs.length) { body.innerHTML+='<div class="empty-state">No logs yet.</div>'; return; }
       logs.forEach(function(l,i) {
         var item=document.createElement('div'); item.className='tl-item';
-        var dotClass=l.Disposition==='Physical Visit'?'tl-visit':(l.Disposition==='Call'||l.Disposition==='WhatsApp'?'tl-call':'tl-note');
-        var emojis={Call:'Tel',WhatsApp:'WA','Physical Visit':'Hosp',Advised:'Note',Deposit:'Dep'};
-        item.innerHTML='<div class="tl-dot '+dotClass+'">'+(emojis[l.Disposition]||'Log')+'</div><div class="tl-content"><div style="display:flex;align-items:center;gap:8px;"><span style="font-weight:600;font-size:13px;">'+esc(l.Disposition)+'</span>'+(i===0?'<span id="editLogSpan" style="font-size:11px;color:var(--pink);cursor:pointer;text-decoration:underline;">Edit</span>':'')+'</div><div class="tl-meta">'+esc(String(l.Timestamp))+' &middot; '+esc(l.Staff_Name)+'</div><div class="tl-text">'+esc(l.Notes)+'</div></div>';
+        var dotMap={Call:'tl-call',WhatsApp:'tl-wa','Physical Visit':'tl-visit',Advised:'tl-note',Deposit:'tl-note'};
+        var emojiMap={Call:'Tel',WhatsApp:'WA','Physical Visit':'Hosp',Advised:'Note',Deposit:'Dep'};
+        item.innerHTML='<div class="tl-dot '+(dotMap[l.Disposition]||'tl-note')+'">'+(emojiMap[l.Disposition]||'Log')+'</div>'+
+          '<div class="tl-content"><div style="display:flex;align-items:center;gap:8px;"><span style="font-weight:600;font-size:13px;">'+esc(l.Disposition)+'</span>'+
+          (i===0?'<span id="editLogSpan" style="font-size:11px;color:var(--pink);cursor:pointer;text-decoration:underline;">Edit</span>':'')+
+          '</div><div class="tl-meta">'+esc(String(l.Timestamp))+' &middot; '+esc(l.Staff_Name)+'</div><div class="tl-text">'+esc(l.Notes)+'</div></div>';
         body.appendChild(item);
         if (i===0) { document.getElementById('editLogSpan').addEventListener('click',function(){ editLastLog(d.Deal_ID); }); }
       });
@@ -682,10 +977,18 @@ function renderSoTab(tab) {
     return;
   }
   if (tab==='profile') {
-    var stageEl=buildSelect(['Registration','Counselling','Investigation','Deposit','Procedure Completed'],d.Current_Stage); stageEl.id='pStage';
+    var stageEl=buildSelect(['Registration','Counselling','Investigation','Deposit','Dormant','Procedure Completed'],d.Current_Stage); stageEl.id='pStage';
     var srcEl=buildSelect(['Walk-in','Camp','ASHA worker','Referral Doctor','Social Media'],d.Lead_Source); srcEl.id='pSrc';
     var grid=document.createElement('div'); grid.className='form-grid';
-    grid.innerHTML=fgH('Wife Name','<input id="pName" value="'+esc(d.Patient_Full_Name)+'">')+fgH('Husband Name','<input id="pHus" value="'+esc(d.Husband_Name)+'">')+fgH("Wife's Mobile",'<input id="pWMob" value="'+esc(d.Wife_Mobile)+'">')+fgH("Husband's Mobile",'<input id="pHMob" value="'+esc(d.Husband_Mobile)+'">')+fgH('City/Village','<input id="pCity" value="'+esc(d.City_Village)+'">')+'<div class="form-group"><label>LEAD SOURCE</label><div id="pSrcW"></div></div><div class="form-group"><label>STAGE</label><div id="pStageW"></div></div>'+fgH('Next Follow-up','<input type="date" id="pFU" value="'+esc(d.Next_Followup_Date)+'">')+fgH('Deposit (Rs.)','<input type="number" id="pDep" value="'+d.Total_Deposit+'">');
+    grid.innerHTML=fgH('Wife Name','<input id="pName" value="'+esc(d.Patient_Full_Name)+'">')+
+      fgH('Husband Name','<input id="pHus" value="'+esc(d.Husband_Name)+'">')+
+      fgH('Wife Mobile','<input id="pWMob" value="'+esc(d.Wife_Mobile)+'">')+
+      fgH('Husband Mobile','<input id="pHMob" value="'+esc(d.Husband_Mobile)+'">')+
+      fgH('City/Village','<input id="pCity" value="'+esc(d.City_Village)+'">')+
+      '<div class="form-group"><label>LEAD SOURCE</label><div id="pSrcW"></div></div>'+
+      '<div class="form-group"><label>STAGE</label><div id="pStageW"></div></div>'+
+      fgH('Next Follow-up','<input type="date" id="pFU" value="'+esc(d.Next_Followup_Date)+'">')+
+      fgH('Deposit (Rs.)','<input type="number" id="pDep" value="'+d.Total_Deposit+'">');
     var noteDiv=document.createElement('div'); noteDiv.className='form-group form-full'; noteDiv.innerHTML='<label>LAST NOTE</label><textarea id="pNote">'+esc(d.Last_Note)+'</textarea>';
     grid.appendChild(noteDiv); body.appendChild(grid);
     document.getElementById('pSrcW').appendChild(srcEl); document.getElementById('pStageW').appendChild(stageEl);
@@ -693,32 +996,138 @@ function renderSoTab(tab) {
     btn.addEventListener('click',saveProfile); body.appendChild(btn); return;
   }
   if (tab==='medical') {
-    body.innerHTML='<div class="form-section">Medical Snapshot</div><div class="form-grid">'+fgH('Infertility Duration','<input id="mDur" value="'+esc(d.Inf_Duration)+'">')+fgH('Infertility Type','<input id="mType" value="'+esc(d.Inf_Type)+'">')+fgH('Previous History','<input id="mPrev" value="'+esc(d.Prev_History)+'">')+fgH('Diagnosis','<input id="mDiag" value="'+esc(d.Diagnosis)+'">') +'</div><div class="form-section">Healthray Handover</div>';
+    body.innerHTML='<div class="form-section">Medical Snapshot</div><div class="form-grid">'+
+      fgH('Infertility Duration','<input id="mDur" value="'+esc(d.Inf_Duration)+'">')+
+      fgH('Infertility Type','<input id="mType" value="'+esc(d.Inf_Type)+'">')+
+      fgH('Previous History','<input id="mPrev" value="'+esc(d.Prev_History)+'">')+
+      fgH('Diagnosis','<input id="mDiag" value="'+esc(d.Diagnosis)+'">') +
+      '</div><div class="form-section">Healthray Handover</div>';
     var hrDiv=document.createElement('div'); hrDiv.style.cssText='display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg);border-radius:8px;margin-bottom:12px;';
-    hrDiv.innerHTML='<span style="font-size:28px;">'+(d.Healthray_Status==='Completed'?'&#9989;':'&#9203;')+'</span><div><div style="font-weight:600;">'+d.Healthray_Status+'</div><div style="font-size:12px;color:var(--muted);">'+(d.Healthray_Status==='Completed'?'By '+esc(d.Healthray_By)+' on '+esc(d.Healthray_Date):'Not yet handed over')+'</div></div>';
+    hrDiv.innerHTML='<span style="font-size:28px;">'+(d.Healthray_Status==='Completed'?'&#9989;':'&#9203;')+'</span>'+
+      '<div><div style="font-weight:600;">'+d.Healthray_Status+'</div>'+
+      '<div style="font-size:12px;color:var(--muted);">'+(d.Healthray_Status==='Completed'?'By '+esc(d.Healthray_By)+' on '+esc(d.Healthray_Date):'Not yet handed over')+'</div></div>';
     if (d.Healthray_Status!=='Completed') { var hb=document.createElement('button'); hb.className='btn btn-teal btn-sm'; hb.style.marginLeft='auto'; hb.textContent='Mark Complete'; hb.addEventListener('click',function(){ doMarkHealthray(d.Deal_ID); }); hrDiv.appendChild(hb); }
     body.appendChild(hrDiv);
     var btn=document.createElement('button'); btn.className='btn btn-primary'; btn.style.width='100%'; btn.textContent='Save Medical Info';
     btn.addEventListener('click',saveMedical); body.appendChild(btn); return;
   }
+  if (tab==='counselling') {
+    var treatOpts=['','IVF - Self Cycle','IVF - Donor Egg (DHI)','IVF - Donor Sperm','IVF - Donor Embryo','IUI - Self','IUI - Donor Sperm','ICSI','TESA/PESA','Laparoscopy / Hysteroscopy','Medical Management'];
+    var outcomeOpts=['','Initial Deposit Given','Main Deposit Given','Refer to HQ','Considering','Not Proceeding - With Advice','Not Proceeding - No Advice'];
+    var treatEl=buildSelect(treatOpts, d.Treatment_Advised||''); treatEl.id='cTreat';
+    var outcomeEl=buildSelect(outcomeOpts,''); outcomeEl.id='cOutcome';
+    body.innerHTML='<div class="form-section">Counselling Record</div>';
+    var grid2=document.createElement('div'); grid2.className='form-grid';
+    grid2.innerHTML='<div class="form-group form-full"><label>TREATMENT ADVISED</label><div id="cTreatW"></div></div>'+
+      '<div class="form-group form-full"><label>COUNSELLING OUTCOME</label><div id="cOutcomeW"></div></div>';
+    body.appendChild(grid2);
+    document.getElementById('cTreatW').appendChild(treatEl);
+    document.getElementById('cOutcomeW').appendChild(outcomeEl);
+
+    // Dynamic fields based on outcome
+    var dynDiv=document.createElement('div'); dynDiv.id='cDynamic'; body.appendChild(dynDiv);
+    var btn=document.createElement('button'); btn.className='btn btn-primary'; btn.style.cssText='width:100%;margin-top:8px;'; btn.textContent='Save Counselling Record';
+    btn.addEventListener('click',saveCounselling); body.appendChild(btn);
+
+    outcomeEl.addEventListener('change', function() {
+      renderCounsellingDynamic(this.value, dynDiv);
+    });
+
+    // Show existing data
+    if (d.Treatment_Advised) treatEl.value = d.Treatment_Advised;
+    return;
+  }
   if (tab==='log') {
     var today=new Date().toISOString().split('T')[0];
     var dispEl=buildSelect(['Call','WhatsApp','Physical Visit','Advised','Deposit'],''); dispEl.id='lDisp';
-    var advEl=buildSelect(['Follow-up','Proceed','Wait','Disqualified'],d.Advise_Outcome); advEl.id='lAdvise';
-    var stgEl=buildSelect(['Registration','Counselling','Investigation','Deposit','Procedure Completed'],d.Current_Stage); stgEl.id='lStage';
-    var grid2=document.createElement('div'); grid2.className='form-grid';
-    grid2.innerHTML=fgH('Staff Name','<input id="lStaff" value="'+esc(APP.staffName)+'">')+'<div class="form-group"><label>DISPOSITION</label><div id="lDispW"></div></div><div class="form-group form-full"><label>NOTES *</label><textarea id="lNote" rows="3" placeholder="What happened?"></textarea></div>'+fgH('Next Follow-up','<input type="date" id="lFU" value="'+today+'">')+'<div class="form-group"><label>ADVISE OUTCOME</label><div id="lAdviseW"></div></div><div class="form-group"><label>UPDATE STAGE</label><div id="lStageW"></div></div>';
-    body.appendChild(grid2);
+    var advEl=buildSelect(['Follow-up','Proceed','Wait','Disqualified'],d.Advise_Outcome||'Follow-up'); advEl.id='lAdvise';
+    var stgEl=buildSelect(['Registration','Counselling','Investigation','Deposit','Dormant','Procedure Completed'],d.Current_Stage); stgEl.id='lStage';
+    var grid3=document.createElement('div'); grid3.className='form-grid';
+    grid3.innerHTML=fgH('Staff','<input id="lStaff" value="'+esc(APP.user.name)+'" readonly style="background:#F8FAFC;">')+
+      '<div class="form-group"><label>DISPOSITION</label><div id="lDispW"></div></div>'+
+      '<div class="form-group form-full"><label>NOTES *</label><textarea id="lNote" rows="3" placeholder="What happened?"></textarea></div>'+
+      fgH('Next Follow-up','<input type="date" id="lFU" value="'+today+'">')+
+      '<div class="form-group"><label>ADVISE OUTCOME</label><div id="lAdviseW"></div></div>'+
+      '<div class="form-group"><label>UPDATE STAGE</label><div id="lStageW"></div></div>';
+    body.appendChild(grid3);
     document.getElementById('lDispW').appendChild(dispEl);
     document.getElementById('lAdviseW').appendChild(advEl);
     document.getElementById('lStageW').appendChild(stgEl);
     var depWrap=document.createElement('div'); depWrap.className='form-group'; depWrap.style.display='none'; depWrap.innerHTML='<label>DEPOSIT AMOUNT (Rs.)</label><input type="number" id="lDepAmt" placeholder="0">';
     body.appendChild(depWrap);
     dispEl.addEventListener('change',function(){ depWrap.style.display=this.value==='Deposit'?'block':'none'; });
-    document.getElementById('lStaff').addEventListener('change',function(){ APP.staffName=this.value; localStorage.setItem('crm_staff',this.value); });
-    var btn=document.createElement('button'); btn.className='btn btn-primary'; btn.style.cssText='width:100%;margin-top:8px;'; btn.textContent='Save Log Entry';
-    btn.addEventListener('click',saveLog); body.appendChild(btn);
+    var btn2=document.createElement('button'); btn2.className='btn btn-primary'; btn2.style.cssText='width:100%;margin-top:8px;'; btn2.textContent='Save Log Entry';
+    btn2.addEventListener('click',saveLog); body.appendChild(btn2);
   }
+}
+
+function renderCounsellingDynamic(outcome, container) {
+  container.innerHTML='';
+  if (outcome==='Initial Deposit Given'||outcome==='Main Deposit Given') {
+    var def=outcome==='Initial Deposit Given'?1000:15000;
+    container.innerHTML='<div class="form-group" style="margin-top:12px;"><label>DEPOSIT AMOUNT (Rs.)</label><input type="number" id="cDepAmt" value="'+def+'"></div>';
+  } else if (outcome==='Considering') {
+    container.innerHTML='<div class="highlight-box" style="margin-top:12px;"><div style="font-size:12px;color:var(--orange);font-weight:600;">This patient will be added to the Telecaller reactivation queue.</div></div>';
+  } else if (outcome==='Not Proceeding - With Advice') {
+    var def90=new Date(); def90.setDate(def90.getDate()+90);
+    var defStr=def90.toISOString().split('T')[0];
+    container.innerHTML='<div class="form-grid" style="margin-top:12px;">'+
+      fgH('Reactivation Date','<input type="date" id="cReactDate" value="'+defStr+'">')+
+      '<div class="form-group form-full"><label>REMARK</label><textarea id="cReactRemark" placeholder="e.g. Getting married in June, call back after wedding"></textarea></div></div>'+
+      '<div class="highlight-box"><div style="font-size:12px;color:var(--orange);font-weight:600;">Patient will appear in Telecaller queue on the reactivation date.</div></div>';
+  } else if (outcome==='Not Proceeding - No Advice') {
+    container.innerHTML='<div class="highlight-box" style="margin-top:12px;"><div style="font-size:12px;color:var(--danger);font-weight:600;">This deal will be marked as Disqualified. No future action will be created.</div></div>';
+  } else if (outcome==='Refer to HQ') {
+    container.innerHTML='<div class="highlight-box" style="margin-top:12px;"><div style="font-size:12px;color:var(--teal);font-weight:600;">Stage will be updated to Investigation. HQ appointment follow-up required.</div></div>';
+  }
+}
+
+function saveCounselling() {
+  var d=APP.currentDeal;
+  var treat=document.getElementById('cTreat').value;
+  var outcome=document.getElementById('cOutcome').value;
+  if (!outcome) { alert('Please select a counselling outcome.'); return; }
+
+  var updates={Deal_ID:d.Deal_ID, Treatment_Advised:treat};
+  var logNote='Counselling: '+outcome+(treat?' | Treatment Advised: '+treat:'');
+  var depAmt=0;
+
+  if (outcome==='Initial Deposit Given'||outcome==='Main Deposit Given') {
+    depAmt=parseInt(document.getElementById('cDepAmt').value)||0;
+    updates.Current_Stage='Deposit';
+    logNote+=' | Deposit: Rs.'+depAmt;
+  } else if (outcome==='Considering') {
+    updates.Current_Stage='Counselling';
+    updates.Advise_Outcome='Follow-up';
+  } else if (outcome==='Refer to HQ') {
+    updates.Current_Stage='Investigation';
+  } else if (outcome==='Not Proceeding - With Advice') {
+    updates.Current_Stage='Dormant';
+    updates.Reactivation_Date=document.getElementById('cReactDate').value;
+    updates.Reactivation_Remark=document.getElementById('cReactRemark').value;
+    logNote+=' | Reactivate: '+updates.Reactivation_Date+' | '+updates.Reactivation_Remark;
+  } else if (outcome==='Not Proceeding - No Advice') {
+    updates.Current_Stage='Disqualified';
+  }
+
+  apiPost('updateDeal', updates).then(function(res) {
+    if (res.success) {
+      Object.assign(d, updates);
+      // Log the counselling interaction
+      apiPost('addLog',{
+        Deal_ID:d.Deal_ID, Staff_Name:APP.user.name,
+        Notes:logNote, Disposition:'Advised',
+        Stage_At_Time:updates.Current_Stage||d.Current_Stage,
+        Location:APP.spoke, Deposit_Added:depAmt
+      }).then(function(){
+        if (depAmt>0) { d.Total_Deposit=(Number(d.Total_Deposit)||0)+depAmt; fireConfetti('heavy'); }
+        if (updates.Current_Stage==='Procedure Completed') fireConfetti('heavy');
+        renderAll();
+        document.querySelectorAll('.so-tab')[0].click();
+        alert('Counselling record saved!');
+      });
+    }
+  });
 }
 
 function saveProfile() {
@@ -733,12 +1142,11 @@ function saveMedical() {
 function saveLog() {
   var d=APP.currentDeal;
   var disp=document.getElementById('lDisp').value; var note=document.getElementById('lNote').value;
-  var staff=document.getElementById('lStaff').value; var fu=document.getElementById('lFU').value;
-  var advise=document.getElementById('lAdvise').value; var stage=document.getElementById('lStage').value;
+  var fu=document.getElementById('lFU').value; var advise=document.getElementById('lAdvise').value;
+  var stage=document.getElementById('lStage').value;
   var depAmt=disp==='Deposit'?(parseInt(document.getElementById('lDepAmt').value)||0):0;
   if (!note.trim()) { alert('Please enter a note.'); return; }
-  APP.staffName=staff; localStorage.setItem('crm_staff',staff);
-  apiPost('addLog',{Deal_ID:d.Deal_ID,Staff_Name:staff,Notes:note,Disposition:disp,Stage_At_Time:stage,Next_Followup:fu,Advise_Outcome:advise,Location:APP.spoke,Deposit_Added:depAmt}).then(function(res){
+  apiPost('addLog',{Deal_ID:d.Deal_ID,Staff_Name:APP.user.name,Notes:note,Disposition:disp,Stage_At_Time:stage,Next_Followup:fu,Advise_Outcome:advise,Location:APP.spoke,Deposit_Added:depAmt}).then(function(res){
     if(res.success){
       d.Current_Stage=stage; d.Next_Followup_Date=fu; d.Advise_Outcome=advise; d.Last_Note=note;
       if(depAmt>0){d.Total_Deposit=(Number(d.Total_Deposit)||0)+depAmt; fireConfetti('heavy');}
@@ -753,6 +1161,7 @@ function editLastLog(dealId) {
   apiPost('editLastLog',{Deal_ID:dealId,Notes:n}).then(function(res){ if(res.success){ var d=APP.deals.find(function(x){ return x.Deal_ID===dealId; }); if(d) d.Last_Note=n; document.querySelectorAll('.so-tab')[0].click(); } });
 }
 
+//    NEW DEAL   
 function openNewDeal() {
   document.getElementById('soTitle').textContent='New Registration';
   document.getElementById('soTabs').innerHTML='';
@@ -760,7 +1169,13 @@ function openNewDeal() {
   var spokeEl=buildSelect(APP.spokes,APP.spoke); spokeEl.id='nSpoke';
   var srcEl=buildSelect(['Walk-in','Camp','ASHA worker','Referral Doctor','Social Media'],''); srcEl.id='nSource';
   var grid=document.createElement('div'); grid.className='form-grid';
-  grid.innerHTML='<div class="form-group form-full"><label>WIFE NAME *</label><input id="nName" placeholder="e.g. Meena Prajapati"></div>'+fgH('Wife Mobile *','<input id="nWMob" type="tel" placeholder="10-digit">')+fgH('Husband Name','<input id="nHus">')+fgH('Husband Mobile','<input id="nHMob" type="tel">')+fgH('City / Village','<input id="nCity">')+'<div class="form-group"><label>SPOKE *</label><div id="nSpokeW"></div></div><div class="form-group"><label>LEAD SOURCE *</label><div id="nSourceW"></div></div><div class="form-group" id="ashaFieldWrap" style="display:none;"><label>ASHA WORKER</label><div id="nAshaW"></div></div>';
+  grid.innerHTML='<div class="form-group form-full"><label>WIFE FULL NAME *</label><input id="nName" placeholder="e.g. Meena Prajapati"></div>'+
+    fgH('Wife Mobile *','<input id="nWMob" type="tel" placeholder="10-digit">')+
+    fgH('Husband Name','<input id="nHus">')+fgH('Husband Mobile','<input id="nHMob" type="tel">')+
+    fgH('City / Village','<input id="nCity">')+
+    '<div class="form-group"><label>SPOKE *</label><div id="nSpokeW"></div></div>'+
+    '<div class="form-group"><label>LEAD SOURCE *</label><div id="nSourceW"></div></div>'+
+    '<div class="form-group" id="ashaFieldWrap" style="display:none;"><label>ASHA WORKER</label><div id="nAshaW"></div></div>';
   body.appendChild(grid);
   document.getElementById('nSpokeW').appendChild(spokeEl);
   document.getElementById('nSourceW').appendChild(srcEl);
@@ -778,7 +1193,6 @@ function openNewDeal() {
   btn.addEventListener('click',submitNewDeal); body.appendChild(btn);
   openSlideover('New Registration');
 }
-
 function submitNewDeal() {
   var name=document.getElementById('nName').value; var mob=document.getElementById('nWMob').value;
   if(!name||!mob){ alert('Name and mobile required.'); return; }
@@ -789,13 +1203,16 @@ function submitNewDeal() {
 
 function closeSlideOver() { document.getElementById('overlay').classList.remove('open'); document.getElementById('slideover').classList.remove('open'); }
 
+//    HELPERS   
 function buildSelect(options,selected) {
   var sel=document.createElement('select'); sel.style.cssText='width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:13px;font-family:inherit;';
   options.forEach(function(o){ var opt=document.createElement('option'); opt.value=o; opt.textContent=o; if(o===selected) opt.selected=true; sel.appendChild(opt); });
   return sel;
 }
-
-function stageBadge(s) { var m={Registration:'badge-gray',Counselling:'badge-blue',Investigation:'badge-orange',Deposit:'badge-teal','Procedure Completed':'badge-green',Disqualified:'badge-red'}; return '<span class="badge '+(m[s]||'badge-gray')+'">'+s+'</span>'; }
+function stageBadge(s) {
+  var m={Registration:'badge-gray',Counselling:'badge-blue',Investigation:'badge-orange',Deposit:'badge-teal','Dormant':'badge-gray','Procedure Completed':'badge-green',Disqualified:'badge-red'};
+  return '<span class="badge '+(m[s]||'badge-gray')+'">'+s+'</span>';
+}
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function fgH(label,input){ return '<div class="form-group"><label>'+label.toUpperCase()+'</label>'+input+'</div>'; }
 function fireConfetti(type) {
